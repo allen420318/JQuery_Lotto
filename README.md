@@ -1,1 +1,0 @@
-# JQuery_Lotto

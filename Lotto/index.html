@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Lotto</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" >
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="ball.js"></script>
+        <style type="text/css">
+            body {
+                background-image: url("bg.png");
+                background-repeat:no-repeat;
+                background-position:center;
+            }
+            .wrapper {
+                width:510px;
+                min-height:670px;
+                margin:0 auto;
+            }
+            h1 {
+                /*width:440px;*/
+                height:50px;
+                background:#D64848;
+                text-align:center;
+                font-family:"微軟正黑體",Arial;
+                color:white;
+                line-height:50px;
+                letter-spacing:10px;
+                box-shadow: 4px 4px gray;
+            }
+            .rule {
+                text-align:center;
+                font-family:"微軟正黑體",Arial;
+                font-weight:600;
+                color:black;
+                font-size:1.3em;
+                letter-spacing:1px;
+                margin-top:30px;
+            }
+            .lottomachine {
+                width:430px;
+                height:350px;
+                margin-top:40px;
+                /*border:1px solid black;*/
+            }
+            #canvasLab {
+                border:1px solid #000000;
+                margin-left:150px;
+                border-radius:10px;
+            }
+            #canvasLab2 {
+                margin-left:150px;
+            }
+            #output {
+                position:absolute;
+                width:24px;
+                height:24px;
+                border:1px solid #FFF;
+                margin-left:238px;
+                margin-top:-115px;
+                background-color:#FFF;
+                z-index:100;
+                box-shadow: 1px 1px 3px rgba(0,0,0,.3);
+            } 
+            .circle {
+                width:24px;
+                height:24px;
+                background-color:#FF8800;
+                border-radius:12px;
+                font-family:"微軟正黑體",Arial;
+                /*color:white;*/
+                font-size:14px;
+                font-weight:bold;
+                line-height:24px;
+                text-align:center;
+            }
+            .Number {
+                width:50px;
+                height:50px;
+                border:1px solid black;
+                margin:20px 10px 10px 10px;
+                font-family:"微軟正黑體",Arial;
+                font-size:2em;
+                font-weight:bold;
+                line-height:50px;
+                text-align:center;
+                float:left;
+            }
+            .special {
+                font-family:"微軟正黑體",Arial;
+                font-size:1em;
+                float:right;
+                margin-right:19px;
+                margin-top:-10px;
+            }
+            .button {
+                width:120px;
+                height:40px;
+                background:#D64848;
+                margin-top:20px;
+                margin-left:85px;
+                font-family:"微軟正黑體",Arial;
+                font-size:1.2em;
+                color:white;
+                letter-spacing:1px;
+                border-radius:7px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="wrapper">
+        <h1>樂透大開獎</h1>
+        <div class="rule">將從<span id="keyinnumber"></span>個號碼中抽出6個號碼+1個特別號</div>
+        <div class="lottomachine">
+            <canvas id="canvasLab" width="200" height="200"></canvas>
+            <canvas id="canvasLab2" width="200" height="130"></canvas>
+            <div class="Number" id="output">
+                <div id="circle"></div>
+            </div>
+            
+        </div>
+        <div class="Number" id="Number1"></div>
+        <div class="Number" id="Number2"></div>
+        <div class="Number" id="Number3"></div>
+        <div class="Number" id="Number4"></div>
+        <div class="Number" id="Number5"></div>
+        <div class="Number" id="Number6"></div>
+        <div class="Number" id="Number7"></div><br><br><br><br>
+        <div class="special">特別號</div>
+        
+        <input class="button" type="button" id="button01" value="號碼開獎"/>
+        <input class="button" type="button" id="button02" value="號碼排列"/>
+        
+        <script>
+            
+            $(document).ready(function() {
+                
+                //詢問彩球的數量及數字的對話框
+                keyin = prompt("請輸入7~49之間數字","");
+                
+                if (keyin != "" && keyin >=7 && keyin <=49 && !isNaN(keyin))
+                {
+                
+                //中間提示文字
+                $("#keyinnumber").text(keyin);
+                
+                //畫出彩球機下半部
+                var machine2 = document.getElementById("canvasLab2");
+                var ctx = machine2.getContext("2d");
+                
+                ctx.moveTo(15, 2);
+                ctx.lineTo(185, 2);
+                ctx.lineTo(200, 130);
+                ctx.lineTo(0, 130);
+                ctx.lineTo(15, 2);
+                ctx.fillStyle = "#A0522D";
+                ctx.fill();
+                
+                //產生亂數
+                function getRandom(x){
+                return Math.floor(Math.random()*x)+1;
+                };
+                
+                //判斷輸入數字調整陣列大小
+                balls.splice(keyin, balls.length - keyin);
+                
+                setInterval(function(){
+                    
+                    for (var i = 0;i<balls.length;i++){
+                        balls[i].plays();
+                        // alert(ball[i].x);
+                    };
+                    
+                },1000/120)
+                
+                
+                // balls = [ball,ball2,ball3,ball4,ball5,ball6/*,ball7,ball8,ball9,ball10,
+                // ball11,ball12,ball13,ball14,ball15*/];
+                
+                //產生不重複數字，依序顯示於方框內
+                $("#button01").on("click", function() {
+                    
+                    if ($("#Number1" ).text() == 0 || $("#Number7" ).text() != 0) {
+                    
+                    var data = new Array(49) 
+                    
+                    // var data = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15/*,16,17,18,19,20,
+                    // 21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,
+                    // 43,44,45,46,47,48,49*/];
+                    
+                    data.splice(keyin - 1, data.length - keyin);
+                    
+                    for (var i = 0;i<data.length;i++){
+                        data[i] = i + 1;
+                    };
+                    
+                    
+                    
+                    $("#Number1,#Number2,#Number3,#Number4,#Number5,#Number6,#Number7").text("");
+                    
+                    setTimeout(function(){
+                    var x = getRandom(data.length);
+                    $("#Number1").text(data[x-1]);
+                    $("#circle").addClass("circle")
+                    $("#circle").text(data[x-1]);
+                    data.splice(x - 1, 1);
+                    balls[0].x=9999;
+                    } ,1000);
+                    
+                    setTimeout(function(){
+                    var y = getRandom(data.length);
+                    $("#Number2").text(data[y-1]);
+                    
+                    $("#circle").text(data[y-1]);
+                    data.splice(y - 1, 1);
+                    balls[1].x=9999;
+                    } ,2000);
+                    
+                    setTimeout(function(){
+                    var z = getRandom(data.length);
+                    $("#Number3").text(data[z-1]);
+                    $("#circle").text(data[z-1]);
+                    data.splice(z - 1, 1);
+                    balls[2].x=9999;
+                    } ,3000);
+                    
+                    setTimeout(function(){
+                    var a = getRandom(data.length);
+                    $("#Number4").text(data[a-1]);
+                    $("#circle").text(data[a-1]);
+                    data.splice(a - 1, 1);
+                    balls[3].x=9999;
+                    } ,4000);
+                    
+                    setTimeout(function(){
+                    var b = getRandom(data.length);
+                    $("#Number5").text(data[b-1]);
+                    $("#circle").text(data[b-1]);
+                    data.splice(b - 1, 1);
+                    balls[4].x=9999;
+                    } ,5000);
+                    
+                    setTimeout(function(){
+                    var c = getRandom(data.length);
+                    $("#Number6").text(data[c-1]);
+                    $("#circle").text(data[c-1]);
+                    data.splice(c - 1, 1);
+                    balls[5].x=9999;
+                    } ,6000);
+                    
+                    setTimeout(function(){
+                    var d = getRandom(data.length);
+                    $("#Number7").text(data[d-1]);
+                    $("#circle").text(data[d-1]);
+                    data.splice(d - 1, 1);
+                    balls[6].x=9999;
+                    } ,7000);
+                    
+                    setTimeout(function(){
+                    $("#circle").text("");
+                    $("#circle").removeClass("circle")
+                    } ,8000);
+                    
+                    setTimeout(function(){
+                    balls[0].x=Math.floor(Math.random()*176) + 12 ,balls[0].y=190;
+                    balls[1].x=Math.floor(Math.random()*176) + 12 ,balls[1].y=190;
+                    balls[2].x=Math.floor(Math.random()*176) + 12 ,balls[2].y=190;
+                    balls[3].x=Math.floor(Math.random()*176) + 12 ,balls[3].y=190;
+                    balls[4].x=Math.floor(Math.random()*176) + 12 ,balls[4].y=190;
+                    balls[5].x=Math.floor(Math.random()*176) + 12 ,balls[5].y=190;
+                    balls[6].x=Math.floor(Math.random()*176) + 12 ,balls[6].y=190;
+                    } ,9000);
+                    
+                    };
+                    
+                })
+                
+                //將方框的數字做排列
+                $("#button02").on("click", function() {
+                    
+                    
+                    if ($("#Number7").text() != 0 ) {
+                    d = [$("#Number1").text(),$("#Number2").text(),$("#Number3").text(),$("#Number4").text(),$("#Number5").text(),$("#Number6").text()];
+                    
+                    d.sort(function(x,y){
+                        return x - y; 
+                    }); 
+                    
+                    $("#Number1").text(d[0]);
+                    $("#Number2").text(d[1]);
+                    $("#Number3").text(d[2]);
+                    $("#Number4").text(d[3]);
+                    $("#Number5").text(d[4]);
+                    $("#Number6").text(d[5]);
+                    
+                    };
+                    
+                })
+                    
+                }
+                
+                else
+                {
+                    location.reload();
+                };
+                
+                
+            })
+            
+        </script>
+    </body>
+</html>
